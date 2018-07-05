@@ -1,8 +1,8 @@
-#include "SimpleSerialAnalyzerSettings.h"
+#include "ISO7816AnalyzerSettings.h"
 #include <AnalyzerHelpers.h>
 
 
-SimpleSerialAnalyzerSettings::SimpleSerialAnalyzerSettings()
+ISO7816AnalyzerSettings::ISO7816AnalyzerSettings()
 :	mInputChannel( UNDEFINED_CHANNEL ),
 	mBitRate( 9600 ),
 	mStartTime( 0 ),
@@ -44,11 +44,11 @@ SimpleSerialAnalyzerSettings::SimpleSerialAnalyzerSettings()
 	AddChannel( mInputChannel, "I/O", false );
 }
 
-SimpleSerialAnalyzerSettings::~SimpleSerialAnalyzerSettings()
+ISO7816AnalyzerSettings::~ISO7816AnalyzerSettings()
 {
 }
 
-bool SimpleSerialAnalyzerSettings::SetSettingsFromInterfaces()
+bool ISO7816AnalyzerSettings::SetSettingsFromInterfaces()
 {
 	mInputChannel = mInputChannelInterface->GetChannel();
 	mBitRate = mBitRateInterface->GetInteger();
@@ -61,7 +61,7 @@ bool SimpleSerialAnalyzerSettings::SetSettingsFromInterfaces()
 	return true;
 }
 
-void SimpleSerialAnalyzerSettings::UpdateInterfacesFromSettings()
+void ISO7816AnalyzerSettings::UpdateInterfacesFromSettings()
 {
 	mInputChannelInterface->SetChannel( mInputChannel );
 	mBitRateInterface->SetInteger( mBitRate );
@@ -69,7 +69,7 @@ void SimpleSerialAnalyzerSettings::UpdateInterfacesFromSettings()
 	mEndTimeInterface->SetInteger( mEndTime );
 }
 
-void SimpleSerialAnalyzerSettings::LoadSettings( const char* settings )
+void ISO7816AnalyzerSettings::LoadSettings( const char* settings )
 {
 	SimpleArchive text_archive;
 	text_archive.SetString( settings );
@@ -85,7 +85,7 @@ void SimpleSerialAnalyzerSettings::LoadSettings( const char* settings )
 	UpdateInterfacesFromSettings();
 }
 
-const char* SimpleSerialAnalyzerSettings::SaveSettings()
+const char* ISO7816AnalyzerSettings::SaveSettings()
 {
 	SimpleArchive text_archive;
 

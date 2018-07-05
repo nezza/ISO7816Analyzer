@@ -1,22 +1,22 @@
-#include "SimpleSerialAnalyzerResults.h"
+#include "ISO7816AnalyzerResults.h"
 #include <AnalyzerHelpers.h>
-#include "SimpleSerialAnalyzer.h"
-#include "SimpleSerialAnalyzerSettings.h"
+#include "ISO7816Analyzer.h"
+#include "ISO7816AnalyzerSettings.h"
 #include <iostream>
 #include <fstream>
 
-SimpleSerialAnalyzerResults::SimpleSerialAnalyzerResults( SimpleSerialAnalyzer* analyzer, SimpleSerialAnalyzerSettings* settings )
+ISO7816AnalyzerResults::ISO7816AnalyzerResults( ISO7816Analyzer* analyzer, ISO7816AnalyzerSettings* settings )
 :	AnalyzerResults(),
 	mSettings( settings ),
 	mAnalyzer( analyzer )
 {
 }
 
-SimpleSerialAnalyzerResults::~SimpleSerialAnalyzerResults()
+ISO7816AnalyzerResults::~ISO7816AnalyzerResults()
 {
 }
 
-void SimpleSerialAnalyzerResults::GenerateBubbleText( U64 frame_index, Channel& channel, DisplayBase display_base )
+void ISO7816AnalyzerResults::GenerateBubbleText( U64 frame_index, Channel& channel, DisplayBase display_base )
 {
 	ClearResultStrings();
 	Frame frame = GetFrame( frame_index );
@@ -26,7 +26,7 @@ void SimpleSerialAnalyzerResults::GenerateBubbleText( U64 frame_index, Channel& 
 	AddResultString( number_str );
 }
 
-void SimpleSerialAnalyzerResults::GenerateExportFile( const char* file, DisplayBase display_base, U32 export_type_user_id )
+void ISO7816AnalyzerResults::GenerateExportFile( const char* file, DisplayBase display_base, U32 export_type_user_id )
 {
 	std::ofstream file_stream( file, std::ios::out );
 
@@ -58,7 +58,7 @@ void SimpleSerialAnalyzerResults::GenerateExportFile( const char* file, DisplayB
 	file_stream.close();
 }
 
-void SimpleSerialAnalyzerResults::GenerateFrameTabularText( U64 frame_index, DisplayBase display_base )
+void ISO7816AnalyzerResults::GenerateFrameTabularText( U64 frame_index, DisplayBase display_base )
 {
 #ifdef SUPPORTS_PROTOCOL_SEARCH
 	Frame frame = GetFrame( frame_index );
@@ -70,13 +70,13 @@ void SimpleSerialAnalyzerResults::GenerateFrameTabularText( U64 frame_index, Dis
 #endif
 }
 
-void SimpleSerialAnalyzerResults::GeneratePacketTabularText( U64 packet_id, DisplayBase display_base )
+void ISO7816AnalyzerResults::GeneratePacketTabularText( U64 packet_id, DisplayBase display_base )
 {
 	//not supported
 
 }
 
-void SimpleSerialAnalyzerResults::GenerateTransactionTabularText( U64 transaction_id, DisplayBase display_base )
+void ISO7816AnalyzerResults::GenerateTransactionTabularText( U64 transaction_id, DisplayBase display_base )
 {
 	//not supported
 }

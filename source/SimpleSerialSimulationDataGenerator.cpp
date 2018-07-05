@@ -1,5 +1,5 @@
 #include "SimpleSerialSimulationDataGenerator.h"
-#include "SimpleSerialAnalyzerSettings.h"
+#include "ISO7816AnalyzerSettings.h"
 
 #include <AnalyzerHelpers.h>
 
@@ -13,7 +13,7 @@ SimpleSerialSimulationDataGenerator::~SimpleSerialSimulationDataGenerator()
 {
 }
 
-void SimpleSerialSimulationDataGenerator::Initialize( U32 simulation_sample_rate, SimpleSerialAnalyzerSettings* settings )
+void SimpleSerialSimulationDataGenerator::Initialize( U32 simulation_sample_rate, ISO7816AnalyzerSettings* settings )
 {
 	mSimulationSampleRateHz = simulation_sample_rate;
 	mSettings = settings;

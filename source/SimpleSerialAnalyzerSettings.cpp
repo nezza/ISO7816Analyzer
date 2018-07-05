@@ -4,10 +4,12 @@
 
 SimpleSerialAnalyzerSettings::SimpleSerialAnalyzerSettings()
 :	mInputChannel( UNDEFINED_CHANNEL ),
-	mBitRate( 9600 )
+	mBitRate( 9600 ),
+	mStartTime( 0 ),
+	mEndTime( 0 )
 {
 	mInputChannelInterface.reset( new AnalyzerSettingInterfaceChannel() );
-	mInputChannelInterface->SetTitleAndTooltip( "Serial", "Standard Simple Serial" );
+	mInputChannelInterface->SetTitleAndTooltip( "ISO7816", "Simple ISO7816 decoder." );
 	mInputChannelInterface->SetChannel( mInputChannel );
 
 	mBitRateInterface.reset( new AnalyzerSettingInterfaceInteger() );
@@ -16,15 +18,30 @@ SimpleSerialAnalyzerSettings::SimpleSerialAnalyzerSettings()
 	mBitRateInterface->SetMin( 1 );
 	mBitRateInterface->SetInteger( mBitRate );
 
+
+	mStartTimeInterface.reset(new AnalyzerSettingInterfaceInteger() );
+	mStartTimeInterface->SetTitleAndTooltip( "Start time (ms)",  "Specify where the analyzer should start." );
+	mStartTimeInterface->SetMax( 10000000 );
+	mStartTimeInterface->SetMin( 0 );
+	mStartTimeInterface->SetInteger( mBitRate );
+	mEndTimeInterface.reset(new AnalyzerSettingInterfaceInteger() );
+	mEndTimeInterface->SetTitleAndTooltip( "End time (ms)",  "Specify where the analyzer should stop." );
+	mEndTimeInterface->SetMax( 10000000 );
+	mEndTimeInterface->SetMin( 0 );
+	mEndTimeInterface->SetInteger( mBitRate );
+
+
 	AddInterface( mInputChannelInterface.get() );
 	AddInterface( mBitRateInterface.get() );
+	AddInterface( mStartTimeInterface.get() );
+	AddInterface( mEndTimeInterface.get() );
 
 	AddExportOption( 0, "Export as text/csv file" );
 	AddExportExtension( 0, "text", "txt" );
 	AddExportExtension( 0, "csv", "csv" );
 
 	ClearChannels();
-	AddChannel( mInputChannel, "Serial", false );
+	AddChannel( mInputChannel, "I/O", false );
 }
 
 SimpleSerialAnalyzerSettings::~SimpleSerialAnalyzerSettings()
@@ -35,9 +52,11 @@ bool SimpleSerialAnalyzerSettings::SetSettingsFromInterfaces()
 {
 	mInputChannel = mInputChannelInterface->GetChannel();
 	mBitRate = mBitRateInterface->GetInteger();
+	mStartTime = mStartTimeInterface->GetInteger();
+	mEndTime = mEndTimeInterface->GetInteger();
 
 	ClearChannels();
-	AddChannel( mInputChannel, "Simple Serial", true );
+	AddChannel( mInputChannel, "ISO7816", true );
 
 	return true;
 }
@@ -46,6 +65,8 @@ void SimpleSerialAnalyzerSettings::UpdateInterfacesFromSettings()
 {
 	mInputChannelInterface->SetChannel( mInputChannel );
 	mBitRateInterface->SetInteger( mBitRate );
+	mStartTimeInterface->SetInteger( mStartTime );
+	mEndTimeInterface->SetInteger( mEndTime );
 }
 
 void SimpleSerialAnalyzerSettings::LoadSettings( const char* settings )
@@ -55,9 +76,11 @@ void SimpleSerialAnalyzerSettings::LoadSettings( const char* settings )
 
 	text_archive >> mInputChannel;
 	text_archive >> mBitRate;
+	text_archive >> mStartTime;
+	text_archive >> mEndTime;
 
 	ClearChannels();
-	AddChannel( mInputChannel, "Simple Serial", true );
+	AddChannel( mInputChannel, "ISO7816", true );
 
 	UpdateInterfacesFromSettings();
 }
@@ -68,6 +91,8 @@ const char* SimpleSerialAnalyzerSettings::SaveSettings()
 
 	text_archive << mInputChannel;
 	text_archive << mBitRate;
+	text_archive << mStartTime;
+	text_archive << mEndTime;
 
 	return SetReturnString( text_archive.GetString() );
 }

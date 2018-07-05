@@ -2,6 +2,7 @@
 #include "SimpleSerialAnalyzerSettings.h"
 #include <AnalyzerChannelData.h>
 
+#include <iostream>
 SimpleSerialAnalyzer::SimpleSerialAnalyzer()
 :	Analyzer2(),  
 	mSettings( new SimpleSerialAnalyzerSettings() ),
@@ -25,25 +26,47 @@ void SimpleSerialAnalyzer::SetupResults()
 void SimpleSerialAnalyzer::WorkerThread()
 {
 	mSampleRateHz = GetSampleRate();
+	U64 start_sample = (mSampleRateHz/1000) * mSettings->mStartTime;
+	U64 end_sample = (mSampleRateHz/1000) * mSettings->mEndTime;
+
 
 	mSerial = GetAnalyzerChannelData( mSettings->mInputChannel );
 
+	if( start_sample )
+		mSerial->Advance(start_sample);
+
+	// Find first rising edge
 	if( mSerial->GetBitState() == BIT_LOW )
 		mSerial->AdvanceToNextEdge();
 
-	U32 samples_per_bit = mSampleRateHz / mSettings->mBitRate;
-	U32 samples_to_first_center_of_first_data_bit = U32( 1.5 * double( mSampleRateHz ) / double( mSettings->mBitRate ) );
+
+	double smallest_period = 1.0/mSettings->mBitRate;
+
+	U32 samples_per_bit = mSampleRateHz / (1.0/smallest_period);
+
+	U32 samples_half = samples_per_bit/2;
+
 
 	for( ; ; )
 	{
 		U8 data = 0;
-		U8 mask = 1 << 7;
+		U8 mask = 1;
 		
+
 		mSerial->AdvanceToNextEdge(); //falling edge -- beginning of the start bit
+
+		if(end_sample && mSerial->GetSampleNumber() > end_sample)
+			continue;
+
+		mSerial->Advance(samples_half);
+
+		// add dot on start bit
+		mResults->AddMarker( mSerial->GetSampleNumber(), AnalyzerResults::Dot, mSettings->mInputChannel );
+
 
 		U64 starting_sample = mSerial->GetSampleNumber();
 
-		mSerial->Advance( samples_to_first_center_of_first_data_bit );
+		mSerial->Advance( samples_per_bit );
 
 		for( U32 i=0; i<8; i++ )
 		{
@@ -55,8 +78,16 @@ void SimpleSerialAnalyzer::WorkerThread()
 
 			mSerial->Advance( samples_per_bit );
 
-			mask = mask >> 1;
+			mask = mask << 1;
 		}
+
+
+		// add dot on stop bit
+		mResults->AddMarker( mSerial->GetSampleNumber(), AnalyzerResults::Dot, mSettings->mInputChannel );
+
+		// Advance over stopbit
+		mSerial->Advance(samples_per_bit);
+
 
 
 		//we have a byte to save. 
@@ -95,12 +126,12 @@ U32 SimpleSerialAnalyzer::GetMinimumSampleRateHz()
 
 const char* SimpleSerialAnalyzer::GetAnalyzerName() const
 {
-	return "Simple Serial";
+	return "ISO7816";
 }
 
 const char* GetAnalyzerName()
 {
-	return "Simple Serial";
+	return "ISO7816";
 }
 
 Analyzer* CreateAnalyzer()

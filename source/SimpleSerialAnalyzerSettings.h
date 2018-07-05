@@ -18,10 +18,14 @@ public:
 	
 	Channel mInputChannel;
 	U32 mBitRate;
+	U64 mStartTime;
+	U64 mEndTime;
 
 protected:
 	std::auto_ptr< AnalyzerSettingInterfaceChannel >	mInputChannelInterface;
 	std::auto_ptr< AnalyzerSettingInterfaceInteger >	mBitRateInterface;
+	std::auto_ptr< AnalyzerSettingInterfaceInteger >	mStartTimeInterface;
+	std::auto_ptr< AnalyzerSettingInterfaceInteger >	mEndTimeInterface;
 };
 
 #endif //SIMPLESERIAL_ANALYZER_SETTINGS
